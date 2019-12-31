@@ -1,5 +1,6 @@
 package runestats.repository.impl;
 
+import runestats.model.GameMode;
 import runestats.model.Skill;
 import runestats.repository.SkillRepository;
 import runestats.repository.exception.SkillParseException;
@@ -8,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +17,8 @@ import java.util.stream.Collectors;
 
 public class RestApiSkillRepository implements SkillRepository {
 
-    public static final int EXPECTED_ROW_LENGTH = 3;
-    private static final String BASE_URL = "https://secure.runescape.com/m=hiscore_oldschool/index_lite.ws?player=";
+    private static final int EXPECTED_ROW_LENGTH = 3;
+    private static final String BASE_URL = "https://secure.runescape.com/m=hiscore_oldschool";
     private static final String[] SKILLS = {"Overall", "Attack", "Defence",
             "Strength", "Hitpoints", "Ranged",
             "Prayer", "Magic", "Cooking",
@@ -27,15 +29,25 @@ public class RestApiSkillRepository implements SkillRepository {
             "Runecraft", "Hunter", "Construction"};
 
     @Override
-    public List<Skill> loadAllSkillsByPlayer(String playerName) throws SkillParseException {
-        List<String> response = doGetRequest(playerName);
+    public List<Skill> loadAllSkillsByPlayer(String playerName, GameMode mode) throws SkillParseException {
+        URL preparedUrl = prepareUrl(playerName, mode);
+        List<String> response = doGetRequest(preparedUrl);
         List<Skill> skills = parseSkillResponse(response);
         return skills;
     }
 
-    private List<String> doGetRequest(String playerName) throws SkillParseException {
+    private URL prepareUrl(String playerName, GameMode mode) throws SkillParseException {
         try {
-            URL url = new URL(BASE_URL + playerName);
+            String preparedUrl = BASE_URL + mode.getUrl();
+            preparedUrl += playerName;
+            return new URL(preparedUrl);
+        } catch (MalformedURLException m) {
+            throw new SkillParseException("Failed to create url.", m);
+        }
+    }
+
+    private List<String> doGetRequest(URL url) throws SkillParseException {
+        try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
             int status = connection.getResponseCode();
@@ -55,7 +67,7 @@ public class RestApiSkillRepository implements SkillRepository {
         for (int x = 0; x < SKILLS.length; x++) {
             String[] parts = response.get(x).split(",");
             if (parts.length != EXPECTED_ROW_LENGTH) {
-                throw new SkillParseException("Invalid response. Expected 3 values got" + parts.length);
+                throw new SkillParseException("Invalid response. Expected 3 values got " + parts.length + " with responseline \"" + response.get(x) + "\"");
             } else {
                 Skill skill = new Skill(SKILLS[x], Integer.parseInt(parts[1]), Long.parseLong(parts[2]),
                         Integer.parseInt(parts[0]));
