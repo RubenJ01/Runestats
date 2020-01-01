@@ -9,4 +9,8 @@ public class User {
     private List<Skill> initialSkills;
     private List<Skill> currentSkills;
 
+    public User(String name, GameMode mode) {
+        this.name = name;
+        this.mode = mode;
+    }
 }

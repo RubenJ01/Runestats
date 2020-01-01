@@ -1,18 +1,25 @@
 package runestats.model;
 
 public enum GameMode {
-    NORMAL("/index_lite.ws?player="), IRONMAN("_ironman/index_lite.ws?player="),
-    ULTIMATE_IRONMAN("_ultimate/index_lite.ws?player="), HARDCORE_IRONMAN("_hardcore/index_lite.ws?player="),
-    DEADMAN_MODE("_deadman/index_lite.ws?player="), LEAGUES("_seasonal/index_lite.ws?player="),
-    TOURNAMENT("_tournament/index_lite.ws?player=");
+    NORMAL("/index_lite.ws?player=", "Normal"), IRONMAN("_ironman/index_lite.ws?player=", "Ironman"),
+    ULTIMATE_IRONMAN("_ultimate/index_lite.ws?player=", "Ultimate Ironman"), HARDCORE_IRONMAN("_hardcore/index_lite.ws?player=", "Hardcore Ironman"),
+    DEADMAN_MODE("_deadman/index_lite.ws?player=", "Deadman Mode"), LEAGUES("_seasonal/index_lite.ws?player=", "Leagues"),
+    TOURNAMENT("_tournament/index_lite.ws?player=", "Tournament");
 
     private String url;
+    private String name;
 
-    GameMode(String url) {
+    GameMode(String url, String name) {
         this.url = url;
+        this.name = name;
     }
 
     public String getUrl() {
         return url;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
