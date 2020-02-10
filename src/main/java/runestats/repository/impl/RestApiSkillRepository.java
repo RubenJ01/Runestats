@@ -28,14 +28,29 @@ public class RestApiSkillRepository implements SkillRepository {
             "Thieving", "Slayer", "Farming",
             "Runecraft", "Hunter", "Construction"};
 
+    /**
+     * loads all skills from an account using the methods below.
+     * @param playerName the name of the player.
+     * @param mode the mode the account is in.
+     * @return a list of all the skills.
+     * @throws SkillParseException an exception thrown when the skills are parsed unsuccessfully.
+     */
     @Override
     public List<Skill> loadAllSkillsByPlayer(String playerName, GameMode mode) throws SkillParseException {
         URL preparedUrl = prepareUrl(playerName, mode);
+        System.out.println(preparedUrl);
         List<String> response = doGetRequest(preparedUrl);
         List<Skill> skills = parseSkillResponse(response);
         return skills;
     }
 
+    /**
+     * Prepares the url, from which we will be accessing the api data.
+     * @param playerName the name of the player.
+     * @param mode the mode the account is in.
+     * @return the created url.
+     * @throws SkillParseException an exception thrown when the skills are parsed unsuccessfully.
+     */
     private URL prepareUrl(String playerName, GameMode mode) throws SkillParseException {
         try {
             String preparedUrl = BASE_URL + mode.getUrl();
@@ -46,6 +61,12 @@ public class RestApiSkillRepository implements SkillRepository {
         }
     }
 
+    /**
+     * Makes a get request to the api we are loading the skills from.
+     * @param url the url we will make the get request to.
+     * @return the loaded skills.
+     * @throws SkillParseException an exception thrown when the skills are parsed unsuccessfully.
+     */
     private List<String> doGetRequest(URL url) throws SkillParseException {
         try {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -62,6 +83,12 @@ public class RestApiSkillRepository implements SkillRepository {
         }
     }
 
+    /**
+     * Converts all the skills into skill objects, with their name, level and xp.
+     * @param response the loaded skills.
+     * @return a list of skill objects.
+     * @throws SkillParseException an exception thrown when the skills are parsed unsuccessfully.
+     */
     private List<Skill> parseSkillResponse(List<String> response) throws SkillParseException {
         List<Skill> skills = new ArrayList<>();
         for (int x = 0; x < SKILLS.length; x++) {
@@ -76,4 +103,5 @@ public class RestApiSkillRepository implements SkillRepository {
         }
         return skills;
     }
+
 }
