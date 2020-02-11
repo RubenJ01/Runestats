@@ -3,6 +3,17 @@ package runestats.model;
 import java.util.List;
 
 public class Monster {
+
+    private String name;
+    private String examine;
+    private List<Item> loot;
+
+    public Monster(String name, String examine, List<Item> loot) {
+        this.name = name;
+        this.examine = examine;
+        this.loot = loot;
+    }
+
     public String getName() {
         return name;
     }
@@ -27,14 +38,4 @@ public class Monster {
         this.loot = loot;
     }
 
-    private String name;
-    private String examine;
-    private List<Item> loot;
-
-
-    public Monster(String name, String examine, List<Item> loot) {
-        this.name = name;
-        this.examine = examine;
-        this.loot = loot;
-    }
 }

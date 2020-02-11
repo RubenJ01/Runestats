@@ -15,6 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Reads data from the hiscores api.
+ * @author Ruben Eekhof rubeneekhof@gmail.com
+ */
 public class RestApiSkillRepository implements SkillRepository {
 
     private static final int EXPECTED_ROW_LENGTH = 3;
