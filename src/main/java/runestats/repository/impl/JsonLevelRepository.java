@@ -1,14 +1,13 @@
 package runestats.repository.impl;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-import org.json.simple.parser.JSONParser;
 import runestats.repository.LevelRepository;
 import runestats.repository.exception.JsonLoadException;
 
-import java.io.File;
-import java.io.FileReader;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Reads the XpByLevel.json file as a JSONArray, and turns it into an hashmap.
@@ -18,18 +17,23 @@ public class JsonLevelRepository implements LevelRepository {
 
     @Override
     public HashMap<Integer, Long> loadLevels() throws JsonLoadException{
-        JSONParser parser = new JSONParser();
         try {
-            String fileName = "config/sample.txt";
-            ClassLoader classLoader = new ReadResourceFileDemo().getClass().getClassLoader();
-            File file = new File(classLoader.getResource(fileName).getFile());
-            Object jsonObject = parser.parse(new FileReader(file));
-            JSONObject jsonObj = (JSONObject) jsonObject;
-            JSONArray levelList = (JSONArray) jsonObj.get("levels");
-            for (Object o : levelList) {
-                System.out.println(o);
+            String fileName = "/data/XpByLevel.json";
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(fileName)));
+            String line = reader.readLine();
+            List<String > levels = new ArrayList<>();
+            while (line != null) {
+                String digit = line.replaceAll("\\D+","");
+                if(!digit.equals("")) {
+                    levels.add(digit);
+                }
+                line = reader.readLine();
             }
-            return new HashMap<Integer, Long>();
+            HashMap<Integer, Long> levelsAndXp = new HashMap<>();
+            for(int x = 0; x < levels.size() - 1; x++) {
+                levelsAndXp.put(Integer.parseInt(levels.get(x)), Long.parseLong(levels.get(x + 1)));
+            }
+            return levelsAndXp;
         } catch (Exception e) {
             throw new JsonLoadException("Failed to load json file.");
         }

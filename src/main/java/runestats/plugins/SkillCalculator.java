@@ -2,7 +2,9 @@ package runestats.plugins;
 
 import runestats.model.Skill;
 import runestats.model.User;
+import runestats.repository.exception.JsonLoadException;
 import runestats.repository.exception.XpLoadException;
+import runestats.repository.impl.JsonLevelRepository;
 
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,18 @@ import java.util.List;
  * @author Ruben Eekhof rubeneekhof@gmail.com
  */
 public class SkillCalculator {
+
+    private static HashMap<Integer, Long> loadedLevels;
+
+    // loads XpByLevel.json when the class gets run
+    static {
+        JsonLevelRepository levelRepo = new JsonLevelRepository();
+        try {
+            loadedLevels = levelRepo.loadLevels();
+        } catch (JsonLoadException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Gets the xp from a certain skill from a user.
@@ -81,6 +95,21 @@ public class SkillCalculator {
             skillHashMap.put(s, neededXp);
         }
         return skillHashMap;
+    }
+
+    /**
+     * Calculates the needed xp to reach a certain level
+     * @param currentLevel the level you currently have.
+     * @param requestedLevel the level you want to reach.
+     * @return the xp needed to reach the requested level given the current level.
+     * @throws XpLoadException unique exception thrown when the xp cant be loaded.
+     */
+    public static long xpToCertainLevel(int currentLevel, int requestedLevel) throws XpLoadException {
+        // making sure you cant calculate xp for a level you cant reach
+        if(!(requestedLevel > 99 || currentLevel > requestedLevel || requestedLevel < 1)) {
+            return loadedLevels.get(requestedLevel) - loadedLevels.get(currentLevel);
+        }
+        throw new XpLoadException("Something went wrong when calculating the needed xp.");
     }
 
 }

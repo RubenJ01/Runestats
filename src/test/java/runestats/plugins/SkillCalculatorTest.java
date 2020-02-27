@@ -4,8 +4,11 @@ import org.junit.jupiter.api.Test;
 import runestats.model.GameMode;
 import runestats.model.Skill;
 import runestats.model.User;
+import runestats.repository.exception.JsonLoadException;
+import runestats.repository.impl.JsonLevelRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -15,6 +18,18 @@ import static org.junit.Assert.assertEquals;
  * @author Ruben Eekhof rubeneekhof@gmail.com
  */
 class SkillCalculatorTest {
+
+    private static HashMap<Integer, Long> loadedLevels;
+
+    // loads XpByLevel.json when the class gets run
+    static {
+        JsonLevelRepository levelRepo = new JsonLevelRepository();
+        try {
+            loadedLevels = levelRepo.loadLevels();
+        } catch (JsonLoadException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Test
     public void getXpFromCertainSkillTest() {
@@ -40,6 +55,16 @@ class SkillCalculatorTest {
         loadedXp = 13034432;
         neededXp = 13034431 - loadedXp > 0 ? 13034431 - loadedXp : 0;
         assertEquals(0, neededXp);
+    }
+
+    @Test
+    public void xpToCertainLevelTest() {
+        int currentLevel = 50;
+        int requestedLevel = 30;
+        if(!(requestedLevel > 99 || currentLevel > requestedLevel || requestedLevel < 1)) {
+            System.out.println("hey");
+            assertEquals(12933098, loadedLevels.get(requestedLevel) - loadedLevels.get(currentLevel));
+        }
     }
 
 }
