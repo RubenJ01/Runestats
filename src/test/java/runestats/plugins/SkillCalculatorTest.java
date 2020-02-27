@@ -60,11 +60,11 @@ class SkillCalculatorTest {
     @Test
     public void xpToCertainLevelTest() {
         int currentLevel = 50;
-        int requestedLevel = 30;
-        if(!(requestedLevel > 99 || currentLevel > requestedLevel || requestedLevel < 1)) {
-            System.out.println("hey");
-            assertEquals(12933098, loadedLevels.get(requestedLevel) - loadedLevels.get(currentLevel));
+        int requestedLevel = 99;
+        assertEquals(12933098, loadedLevels.get(requestedLevel) - loadedLevels.get(currentLevel));
+        currentLevel = 1;
+        requestedLevel = 2;
+        assertEquals(83, loadedLevels.get(requestedLevel) - loadedLevels.get(currentLevel));
         }
-    }
 
 }

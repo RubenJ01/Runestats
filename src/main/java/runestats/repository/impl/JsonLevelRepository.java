@@ -24,13 +24,13 @@ public class JsonLevelRepository implements LevelRepository {
             List<String > levels = new ArrayList<>();
             while (line != null) {
                 String digit = line.replaceAll("\\D+","");
-                if(!digit.equals("")) {
+                if(!digit.isEmpty()) {
                     levels.add(digit);
                 }
                 line = reader.readLine();
             }
             HashMap<Integer, Long> levelsAndXp = new HashMap<>();
-            for(int x = 0; x < levels.size() - 1; x++) {
+            for(int x = 0; x < levels.size() - 1; x+=2) {
                 levelsAndXp.put(Integer.parseInt(levels.get(x)), Long.parseLong(levels.get(x + 1)));
             }
             return levelsAndXp;
@@ -38,5 +38,4 @@ public class JsonLevelRepository implements LevelRepository {
             throw new JsonLoadException("Failed to load json file.");
         }
     }
-
 }
